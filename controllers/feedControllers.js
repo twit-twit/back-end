@@ -4,6 +4,11 @@ const { Op } = require("sequelize")
 
 //게시글 조회
 exports.getFeeds = async (req, res) => {
+    /*========================================================================================================
+#swagger.tags = ['Feeds']
+#swagger.summary = '게시글 조회 API'
+#swagger.description = '게시글 조회 API'
+========================================================================================================*/
     const { feedType } = req.query;
     const userCode = 1;
 
@@ -15,18 +20,18 @@ exports.getFeeds = async (req, res) => {
 
         } else if (feedType === "user") {
             const user = await Users.findOne({ where: { userCode: userCode } })
-            console.log("@@@@@", user)
             const feeds = await user.getFeeds();
-            console.log("@$$$$$$$", feeds)
-
-            // await Feeds.findAll({
-            //     where: {
-            //         userCode: userCode
-            //     },
-            //     include: [{
-            //         model: Users,
-            //     }]
-            // })
+            /*=====================================================================================
+     #swagger.responses[200] = {
+      description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+      schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
+  }
+  =====================================================================================*/
+            res.status(200).json({
+                result: "SUCCESS",
+                code: 0,
+                feeds
+            })
 
         }
 
@@ -42,17 +47,56 @@ exports.getFeeds = async (req, res) => {
 
 //게시글 작성
 exports.postFeeds = async (req, res) => {
-    const { userCode, content } = req.body;
+    /*========================================================================================================
+#swagger.tags = ['Feeds']
+#swagger.summary = '게시글 작성 API'
+#swagger.description = '게시글 작성 API'
+========================================================================================================*/
+
+    const { userCode, content, feedUrl } = req.body;
+    console.log("게시글 작성", content)
+    if (content === "" || content === null) {
+        return res.status(400).json({
+            result: "FAIL",
+            code: -4,
+            message: "내용은 반드시 입력해주세요!"
+        })
+    }
+
+
     try {
-        await Feeds.create({
-            userCode,
-            content,
-        })
-        res.status(201).json({
-            result: 'SUCCESS',
-            code: 0,
-            message: "게시글 작성 완료!"
-        })
+        if (!req.file) {
+            await Feeds.create({
+                userCode,
+                content,
+                feedUrl,
+                feedImage: ''
+            })
+            res.status(201).json({
+                result: 'SUCCESS',
+                code: 0,
+                message: "게시글 작성 완료!"
+            })
+        } else {
+            await Feeds.create({
+                userCode,
+                content,
+                feedUrl,
+                feedImage: '/image/' + req.file.filename
+            })
+            /*=====================================================================================
+              #swagger.responses[200] = {
+            description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+            schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
+        }
+        =====================================================================================*/
+            res.status(201).json({
+                result: 'SUCCESS',
+                code: 0,
+                message: "게시글 작성 완료!"
+            })
+        }
+
     } catch (err) {
         console.log(err)
         res.status(400).json({
@@ -68,11 +112,22 @@ exports.postFeeds = async (req, res) => {
 
 //게시글 삭제
 exports.deleteFeeds = async (req, res) => {
+    /*========================================================================================================
+#swagger.tags = ['Feeds']
+#swagger.summary = '게시글 삭제 API'
+#swagger.description = '게시글 삭제 API'
+========================================================================================================*/
     const { feedCode } = req.params;
-    console.log("삭제 게시물위치", feedCode)
+
 
     try {
         await Feeds.destroy({ where: { feedCode: feedCode } })
+        /*=====================================================================================
+              #swagger.responses[200] = {
+            description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+            schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
+        }
+        =====================================================================================*/
         res.status(200).json({
             result: "SUCCESS",
             code: 0,
@@ -82,7 +137,7 @@ exports.deleteFeeds = async (req, res) => {
     } catch (err) {
         console.log(err)
         res.status(400).json({
-            esult: "FAIL",
+            result: "FAIL",
             code: 4,
             message: "게시글 삭제 실패!"
         })
@@ -92,17 +147,38 @@ exports.deleteFeeds = async (req, res) => {
 
 //게시글 수정
 exports.updateFeeds = async (req, res) => {
+    /*========================================================================================================
+#swagger.tags = ['Feeds']
+#swagger.summary = '게시글 수정 API'
+#swagger.description = '게시글 수정 API'
+========================================================================================================*/
     const { feedCode } = req.params;
-    const { title, content } = req.body;
+    const { content, feedUrl } = req.body;
 
 
     try {
-        await Feeds.update({ title, content }, { where: { feedCode: feedCode } })
-        res.status(200).json({
-            result: "SUCCESS",
-            code: 0,
-            message: "게시글 수정 완료!"
-        })
+        if (!req.file) {
+            await Feeds.update({ content, feedUrl, feedImage: "" }, { where: { feedCode: feedCode } })
+            res.status(200).json({
+                result: "SUCCESS",
+                code: 0,
+                message: "게시글 수정 완료!"
+            })
+        } else {
+            const feedImage = '/image/' + req.file.filename
+            await Feeds.update({ content, feedUrl, feedImage }, { where: { feedCode: feedCode } })
+            /*=====================================================================================
+                #swagger.responses[200] = {
+              description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+              schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
+          }
+          =====================================================================================*/
+            res.status(200).json({
+                result: "SUCCESS",
+                code: 0,
+                message: "게시글 수정 완료!"
+            })
+        }
     } catch (err) {
         console.log(err)
         res.status(400).json({
