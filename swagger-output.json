@@ -10,5 +10,98 @@
   "schemes": [
     "http"
   ],
-  "paths": {}
+  "paths": {
+    "/api/users/login": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "userId": {
+                  "example": "any"
+                },
+                "password": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/users/dup": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "회원가입 내 회원ID 중복체크 API",
+        "description": "회원가입 진행 중 사용자가 입력한 ID가 기존에 가입되어있는지 확인하는 API",
+        "parameters": [
+          {
+            "name": "userId",
+            "description": "(필수)userId를 입력하세요.",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "type": "string",
+                  "example": "SUCCESS"
+                },
+                "code": {
+                  "type": "number",
+                  "example": 0
+                },
+                "message": {
+                  "type": "string",
+                  "example": "정상"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "type": "string",
+                  "example": "FAIL"
+                },
+                "code": {
+                  "type": "number",
+                  "example": -1
+                },
+                "message": {
+                  "type": "string",
+                  "example": "이미 가입된 ID"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }

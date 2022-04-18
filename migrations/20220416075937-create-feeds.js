@@ -17,10 +17,13 @@ module.exports = {
           key: "userCode",
         }
       },
-      title: {
+      content: {
         type: Sequelize.STRING
       },
-      content: {
+      feedUrl: {
+        type: Sequelize.STRING
+      },
+      feedImage: {
         type: Sequelize.STRING
       },
       createdAt: {

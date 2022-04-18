@@ -21,8 +21,9 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true
     },
     userCode: DataTypes.INTEGER,
-    title: DataTypes.STRING,
-    content: DataTypes.STRING
+    content: DataTypes.STRING,
+    feedUrl: DataTypes.STRING,
+    feedImage: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'Feeds',
