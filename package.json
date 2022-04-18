@@ -15,8 +15,10 @@
     "mysql2": "^2.3.3",
     "sanitize-html": "^2.7.0",
     "sequelize": "^6.19.0",
-    "sequelize-cli": "^6.4.1",
     "swagger-autogen": "^2.21.0",
     "swagger-ui-express": "^4.3.0"
+  },
+  "devDependencies": {
+    "sequelize-cli": "^6.4.1"
   }
 }
