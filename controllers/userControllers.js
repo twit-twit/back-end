@@ -20,3 +20,19 @@ exports.postSignUp = async (req, res) => {
 
     res.send('희희');
 }
+
+/**
+ * TODO:
+ *  1. 사용자가 입력한 ID에 대한 Valid Check를 진행한다.
+ *      1-1. 4자 이상, 30자 이하
+ *  2. 사용자가 입력한 ID의 기존재여부를 확인한다.
+ *      2-1. 기존재 시, status code 400 return.
+ */
+exports.getDuplicateUserId = async (req, res) => {
+    const { userId } = req.query;
+
+    const findUserId = await Users.findOne({ where: {userId}});
+    if(findUserId) res.status(400).json({result: 'FAIL', code:-1, message:'이미 가입된 ID'});
+
+    res.status(200).json({result: 'SUCCESS', code: 0, message: '정상'});
+}

@@ -10,12 +10,17 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Feeds.belongsTo(models.User, { foreignKey: { name: "userCode", allowNull: false }, onDelete: "CASCADE", });
+      console.log(models)
+      // Feeds.belongsTo(models.Users, { foreignKey: "userCode", onDelete: "CASCADE", });
+      models.Feeds.belongsTo(models.Users, { foreignKey: { name: "userCode", allowNull: false }, onDelete: "CASCADE", });
     }
   }
   Feeds.init({
+    feedCode: {
+      type: DataTypes.INTEGER,
+      primaryKey: true
+    },
     userCode: DataTypes.INTEGER,
-    feedCode: DataTypes.INTEGER,
     title: DataTypes.STRING,
     content: DataTypes.STRING
   }, {

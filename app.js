@@ -1,5 +1,5 @@
 require('dotenv').config();
-const config = require(__dirname + '/config/config.js')
+// const config = require(__dirname + '/config/config.js')
 const express = require('express')
 const cors = require('cors')
 
