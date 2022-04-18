@@ -93,7 +93,7 @@ exports.postSignUp = async (req, res) => {
             schema: { "result": "FAIL", 'code': -2, 'message': '패스워드 불일치', }
         }
         =====================================================================================*/
-        return res.status(400).json({ result: 'FAIL', code: -2, message: '패스워드 불일치' })
+        return res.status(400).json({ result: 'FAIL', code: -2, message: '패스워드 불일치' });
 
     // 패스워드 암호화
     const hashPassword = bcrypt.hashSync(password, +process.env.SECRET_KEY);
@@ -160,4 +160,26 @@ exports.getDuplicateUserId = async (req, res) => {
     }
     =====================================================================================*/
     res.status(200).json({result: 'SUCCESS', code: 0, message: '정상'});
+}
+
+/**
+ * 2022. 04. 18. HSYOO.
+ * TODO:
+ *  1. 사용자가 입력한 ID에 대한 Valid Check를 진행한다.
+ *      1-1. 4자 이상, 30자 이하
+ *  2. 사용자가 입력한 ID의 기존재여부를 확인한다.
+ *      2-1. 기존재 시, status code 400 return.
+ * 
+ * FIXME:
+ *  1. [V] ID에 대한 Vaid Check 진행해야한다.
+ */
+exports.getValidAuthCheck = (req, res) => {
+    try {
+        const { user } = res.locals;
+        res.status(200).json({
+            userId: user.userId,
+        });
+    } catch (err) {
+        res.status(400).json({ result: "FAIL", message: "유저를 확인할 수 없습니다." });
+    }
 }

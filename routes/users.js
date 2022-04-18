@@ -38,8 +38,12 @@ const upload = multer({
 // Controller
 const userController = require('../controllers/userControllers');
 
+// Middleware
+const authMiddleware = require('../middlewares/users/auth-middleware');
+
 router.post('/', upload.single('image'), userController.postSignUp);
 router.post('/login', userController.postLogin);
 router.get('/dup', userController.getDuplicateUserId);
+router.get('/auth', userController.getValidAuthCheck);
 
 module.exports = router;
