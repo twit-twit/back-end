@@ -15,18 +15,12 @@ exports.getFeeds = async (req, res) => {
 
         } else if (feedType === "user") {
             const user = await Users.findOne({ where: { userCode: userCode } })
-            console.log("@@@@@", user)
             const feeds = await user.getFeeds();
-            console.log("@$$$$$$$", feeds)
-
-            // await Feeds.findAll({
-            //     where: {
-            //         userCode: userCode
-            //     },
-            //     include: [{
-            //         model: Users,
-            //     }]
-            // })
+            res.status(200).json({
+                result: "SUCCESS",
+                code: 0,
+                feeds
+            })
 
         }
 
@@ -42,17 +36,37 @@ exports.getFeeds = async (req, res) => {
 
 //게시글 작성
 exports.postFeeds = async (req, res) => {
-    const { userCode, content } = req.body;
+
+    const { userCode, content, feedUrl, } = req.body;
+
+
     try {
-        await Feeds.create({
-            userCode,
-            content,
-        })
-        res.status(201).json({
-            result: 'SUCCESS',
-            code: 0,
-            message: "게시글 작성 완료!"
-        })
+        if (!req.file || feedUrl === null) {
+            await Feeds.create({
+                userCode,
+                content,
+                feedUrl: '',
+                feedImage: ''
+            })
+            res.status(201).json({
+                result: 'SUCCESS',
+                code: 0,
+                message: "게시글 작성 완료!"
+            })
+        } else {
+            await Feeds.create({
+                userCode,
+                content,
+                feedUrl,
+                feedImage: '/image/' + req.file.filename
+            })
+            res.status(201).json({
+                result: 'SUCCESS',
+                code: 0,
+                message: "게시글 작성 완료!"
+            })
+        }
+
     } catch (err) {
         console.log(err)
         res.status(400).json({
