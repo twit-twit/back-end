@@ -1,8 +1,8 @@
 const router = require('express').Router();
-const controller = require('../controllers/feedControllers');
+const followController = require("../controllers/followControllers")
 
-router.get('/friendships', followController.getMyFollows);
-router.post('/friendships', followController.postMyFollows);
-router.delete('/friendships', followController.deleteMyFollows);
+router.get('/', followController.getMyFollows);
+router.post('/', followController.postMyFollows);
+router.delete('/', followController.deleteMyFollows);
 
 module.exports = router;
