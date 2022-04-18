@@ -24,6 +24,6 @@ const upload = multer({
 router.post("/", upload.single('feedImage'), feedController.postFeeds)
 router.get('/', feedController.getFeeds)
 router.delete('/:feedCode', feedController.deleteFeeds)
-router.put("/:feedCode", feedController.updateFeeds)
+router.put("/:feedCode", upload.single('feedImage'), feedController.updateFeeds)
 
 module.exports = router
