@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       console.log(models)
       // Feeds.belongsTo(models.Users, { foreignKey: "userCode", onDelete: "CASCADE", });
+      Feeds.hasMany(models.Liked, { foreignKey: "feedCode" })
       models.Feeds.belongsTo(models.Users, { foreignKey: { name: "userCode", allowNull: false }, onDelete: "CASCADE", });
     }
   }
