@@ -85,6 +85,7 @@ exports.deleteFeeds = async (req, res) => {
     const { feedCode } = req.params;
     console.log("삭제 게시물위치", feedCode)
 
+
     try {
         await Feeds.destroy({ where: { feedCode: feedCode } })
         res.status(200).json({
@@ -96,7 +97,7 @@ exports.deleteFeeds = async (req, res) => {
     } catch (err) {
         console.log(err)
         res.status(400).json({
-            esult: "FAIL",
+            result: "FAIL",
             code: 4,
             message: "게시글 삭제 실패!"
         })
