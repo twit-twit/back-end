@@ -1,6 +1,6 @@
 const { Feeds } = require("../models")
 const { Users } = require("../models")
-const { Op } = require("sequelize")
+
 
 //게시글 조회
 exports.getFeeds = async (req, res) => {
@@ -9,8 +9,7 @@ exports.getFeeds = async (req, res) => {
 #swagger.summary = '게시글 조회 API'
 #swagger.description = '게시글 조회 API'
 ========================================================================================================*/
-    const { feedType } = req.query;
-    const userCode = 2;
+    const { feedType, userCode } = req.query;
 
     try {
         if (feedType === 'all') {
@@ -22,11 +21,11 @@ exports.getFeeds = async (req, res) => {
             const user = await Users.findOne({ where: { userCode: userCode } })
             const feeds = await user.getFeeds();
             /*=====================================================================================
-     #swagger.responses[200] = {
-      description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
-      schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
-  }
-  =====================================================================================*/
+             #swagger.responses[200] = {
+              description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+              schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
+          }
+          =====================================================================================*/
             res.status(200).json({
                 result: "SUCCESS",
                 code: 0,
@@ -117,7 +116,7 @@ exports.deleteFeeds = async (req, res) => {
 #swagger.summary = '게시글 삭제 API'
 #swagger.description = '게시글 삭제 API'
 ========================================================================================================*/
-    const { feedCode } = req.params;
+    const { feedCode } = req.query;
 
 
     try {
@@ -152,8 +151,7 @@ exports.updateFeeds = async (req, res) => {
 #swagger.summary = '게시글 수정 API'
 #swagger.description = '게시글 수정 API'
 ========================================================================================================*/
-    const { feedCode } = req.params;
-    const { userCode, content, feedUrl } = req.body;
+    const { feedCode, userCode, content, feedUrl } = req.body;
 
     let userFeed = await Feeds.findAll({ where: { feedCode } }).then((user) => {
         return user[0].userCode

@@ -20,10 +20,12 @@ const upload = multer({
     limiuts: { fileSize: 10 * 1024 * 1024 }
 });
 
+
+
 // 'image'라는 이름은 multipart.html의 <input type="file" name="image"> 에서 폼데이터 이름으로 온 것이다.
 router.post("/", upload.single('feedImage'), feedController.postFeeds)
 router.get('/', feedController.getFeeds)
-router.delete('/:feedCode', feedController.deleteFeeds)
-router.put("/:feedCode", upload.single('feedImage'), feedController.updateFeeds)
+router.delete('/', feedController.deleteFeeds)
+router.put("/", upload.single('feedImage'), feedController.updateFeeds)
 
 module.exports = router
