@@ -15,6 +15,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   Feeds.init({
     userCode: DataTypes.INTEGER,
+    feedCode: DataTypes.INTEGER,
     title: DataTypes.STRING,
     content: DataTypes.STRING
   }, {

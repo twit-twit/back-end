@@ -1,10 +1,7 @@
 const router = require('express').Router();
-const controller = require('../controllers/userControllers');
 
-router.get('/', (req, res) => {
-    res.status(200).send('API를 구현합시다!');
-});
+const userRouter = require('./users');
 
-router.post('/users', controller.postLogin);
+router.use('/users', userRouter);
 
 module.exports = router;
