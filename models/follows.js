@@ -15,6 +15,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Follows.init({
+    followId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true
+    },
     userCode: DataTypes.INTEGER,
     followUserCode: DataTypes.INTEGER
   }, {

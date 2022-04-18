@@ -21,6 +21,8 @@ const removeHeader = (req, res, next) => {
 app.use(cors());
 app.use(morgan("combined"));
 app.use(express.json());
+app.use(express.static("public"));
+app.use('/image', express.static('./uploads'));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(removeHeader);
@@ -30,7 +32,10 @@ app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 const Router = require('./routes')
 app.use('/api', Router);
 
-
+//아래 코드는 항상 가장 아래에 존재해야함.
+app.use((err, req, res, next) => {
+    res.json({result: 'FAIL', code: -20, message: err.message});
+})
 
 
 
