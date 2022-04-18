@@ -158,8 +158,9 @@ exports.updateFeeds = async (req, res) => {
     let userFeed = await Feeds.findAll({ where: { feedCode } }).then((user) => {
         return user[0].userCode
     })
-
-    if (userCode == userFeed) {
+    console.log("유저코드", typeof (userCode))
+    console.log("유저피드", typeof (userFeed))
+    if (Number(userCode) === userFeed) {
         try {
             if (!req.file) {
                 await Feeds.update({ content, feedUrl, feedImage: "" }, { where: { feedCode: feedCode } })
