@@ -1,6 +1,7 @@
 const router = require("express").Router()
 const multer = require("multer")
 const feedController = require("../controllers/feedControllers")
+const authMiddleware = require('../middlewares/users/auth-middleware');
 const fs = require('fs');
 try {
     fs.readdirSync('uploads'); // 폴더 확인
@@ -23,9 +24,10 @@ const upload = multer({
 
 
 // 'image'라는 이름은 multipart.html의 <input type="file" name="image"> 에서 폼데이터 이름으로 온 것이다.
-router.post("/", upload.single('feedImage'), feedController.postFeeds)
-router.get('/', feedController.getFeeds)
-router.delete('/', feedController.deleteFeeds)
-router.put("/", upload.single('feedImage'), feedController.updateFeeds)
+router.post('/', authMiddleware, upload.single('feedImage'), feedController.postFeeds)
+router.get('/', authMiddleware, feedController.getFeeds)
+router.delete('/', authMiddleware, feedController.deleteFeeds)
+router.put('/', authMiddleware, upload.single('feedImage'), feedController.updateFeeds)
+
 
 module.exports = router
