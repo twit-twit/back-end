@@ -10,7 +10,14 @@ exports.getMyFollows = async (req, res) => {
     ========================================================================================================*/
     const { userCode } = req.query;
     const isUser = await Users.findOne({ where: {userCode} })
-    if (!isUser) { return res.status(400).json({
+    if (!isUser) {
+        /*=====================================================================================
+        #swagger.responses[400] = {
+            description: '비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+            schema: { "result": "FAIL", 'code': -5, 'message': "팔로우 조회 실패", }
+        }
+        =====================================================================================*/
+        return res.status(400).json({
             result: 'FAIL',
             code: -5,
             message: "팔로우 조회 실패"
@@ -59,22 +66,48 @@ exports.postMyFollows = async (req, res) => {
     const { userCode, followUserCode } = req.body;
     console.log(req.body)
     const findFollow = await Follows.findOne({ where: { userCode, followUserCode } })
-    /*=====================================================================================
-    #swagger.responses[400] = {
-        description: '비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
-        schema: { "result": "FAIL", 'code': -5, 'message': "팔로우 실패", }
+    if (userCode==followUserCode) {
+        /*=====================================================================================
+        #swagger.responses[400] = {
+            description: '비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+            schema: { "result": "FAIL", 'code': -5, 'message': "팔로우 실패", }
+        }
+        =====================================================================================*/
+        return res.status(400).json({
+            result: "FAIL", 
+            code: -5, 
+            message: "팔로우 실패1"
+        })
     }
-    =====================================================================================*/
-    if (userCode==followUserCode) {return res.status(400).json({result: "FAIL", code: -5, message: "팔로우 실패1"})}
-    /*=====================================================================================
-    #swagger.responses[400] = {
-        description: '비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
-        schema: { "result": "FAIL", 'code': -5, 'message': "팔로우 실패", }
+    if (findFollow) {
+        /*=====================================================================================
+        #swagger.responses[400] = {
+            description: '비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+            schema: { "result": "FAIL", 'code': -5, 'message': "팔로우 실패", }
+        }
+        =====================================================================================*/
+        return res.status(400).json({
+            result: "FAIL", 
+            code: -5, 
+            message: "팔로우 실패2"
+        })
     }
-    =====================================================================================*/
-    if (findFollow) {return res.status(400).json({result: "FAIL", code: -5, message: "팔로우 실패2"})}
+    const isUser = await Users.findOne({ where: { userCode } })
+    if (!isUser) {
+        /*=====================================================================================
+        #swagger.responses[400] = {
+            description: '비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+            schema: { "result": "FAIL", 'code': -5, 'message': "팔로우 조회 실패", }
+        }
+        =====================================================================================*/
+        return res.status(400).json({
+            result: 'FAIL',
+            code: -5,
+            message: "팔로우 실패3"
+        })
+    }
     try {
-        const existUser = await Users.findOne({ where : { [Op.and]: [{ userCode }, { userCode: followUserCode }], }, });
+        const existUser = await Users.findOne({ where : { userCode: followUserCode } });
         console.log("existUser", existUser)
         if (existUser === null) {
             /*=====================================================================================
@@ -86,7 +119,7 @@ exports.postMyFollows = async (req, res) => {
             return res.status(400).json({
                 result: 'FAIL',
                 code: -5,
-                message: "팔로우 실패3"
+                message: "팔로우 실패4"
             })
         }
         await Follows.create({
