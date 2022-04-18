@@ -7,9 +7,6 @@ exports.getFeeds = async (req, res) => {
     const { feedType } = req.query;
     const userCode = 1;
 
-    // include: [
-    //     { model: Users, as: "users", attributes: ['userId'] }
-    // ]
     try {
         if (feedType === 'all') {
             const feedArr = await Feeds.findAll({})
@@ -49,7 +46,6 @@ exports.postFeeds = async (req, res) => {
     try {
         await Feeds.create({
             userCode,
-            title,
             content,
         })
         res.status(201).json({
@@ -73,6 +69,7 @@ exports.postFeeds = async (req, res) => {
 //게시글 삭제
 exports.deleteFeeds = async (req, res) => {
     const { feedCode } = req.params;
+    console.log("삭제 게시물위치", feedCode)
 
     try {
         await Feeds.destroy({ where: { feedCode: feedCode } })
