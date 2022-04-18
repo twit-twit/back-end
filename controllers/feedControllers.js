@@ -10,11 +10,11 @@ exports.getFeeds = async (req, res) => {
     //     { model: Users, as: "users", attributes: ['userId'] }
     // ]
     try {
-        const feedArr = await Feeds.findAll({})
-        console.log("$$$$$$", feedArr)
-        // let result = feedArr.sort((a, b) => b.createdAt - a.createdAt)
-        res.status(200).send('API를 구현합시다!', feedArr);
         if (feedType === 'all') {
+            const feedArr = await Feeds.findAll({})
+            console.log("$$$$$$", feedArr)
+            let result = feedArr.sort((a, b) => b.createdAt - a.createdAt)
+            res.status(200).json({ result: "SUCCESS", code: 0, result });
 
         } else if (feedType === "user") {
             await Feeds.findAll({
@@ -30,7 +30,7 @@ exports.getFeeds = async (req, res) => {
         console.log(err)
         res.status(400).json({
             result: 'FAIL',
-            code: '-4',
+            code: -4,
             message: "게시글 조회 실패!"
         })
     }
@@ -47,14 +47,14 @@ exports.postFeeds = async (req, res) => {
         })
         res.status(201).json({
             result: 'SUCCESS',
-            code: '0',
+            code: 0,
             message: "게시글 작성 완료!"
         })
     } catch (err) {
         console.log(err)
         res.status(400).json({
             result: 'FAIL',
-            code: '-4',
+            code: -4,
             message: "게시글 작성 실패!"
         })
     }
@@ -71,7 +71,7 @@ exports.deleteFeeds = async (req, res) => {
         await Feeds.destory({ where: { feedCode: feedCode } })
         res.status(200).json({
             result: "SUCCESS",
-            code: "0",
+            code: 0,
             message: "게시글 삭제완료!"
         })
 
@@ -79,7 +79,7 @@ exports.deleteFeeds = async (req, res) => {
         console.log(err)
         res.status(400).json({
             esult: "FAIL",
-            code: "-4",
+            code: 4,
             message: "게시글 삭제 실패!"
         })
     }
@@ -97,14 +97,14 @@ exports.updateFeeds = async (req, res) => {
             await Feeds.update({ feedCode: feedCode }, { title, content })
             res.status(200).json({
                 result: "SUCCESS",
-                code: "0", message:
-                    "게시글 수정 완료!"
+                code: 0,
+                message: "게시글 수정 완료!"
             })
         } else {
             await Feeds.update({ feedCode: feedCode }, { title, content, img })
             res.status(200).json({
                 result: "SUCCESS",
-                code: "0",
+                code: 0,
                 message: "게시글 수정 완료!"
             })
         }
@@ -112,7 +112,7 @@ exports.updateFeeds = async (req, res) => {
         console.log(err)
         res.staut(400).json({
             result: "FAIL",
-            code: "-4",
+            code: -4,
             message: "게시글 수정 실패!"
         })
     }
