@@ -232,15 +232,6 @@ exports.likedFeed = async (req, res) => {
 
         if (!checkLike) {
             await Liked.create({ userCode, feedCode })
-            const likedFeedCode = await Feeds.findOne({ where: { feedCode } })
-            if (!likedFeedCode) {
-                return res.status(400).json({
-                    result: "FAIL",
-                    code: -4,
-                    message: "좋아요할 게시물이 존재하지 않습니다."
-                })
-            }
-
             /*=====================================================================================
                     #swagger.responses[200] = {
                   description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
