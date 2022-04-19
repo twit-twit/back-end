@@ -24,6 +24,6 @@ module.exports = async (req, res, next) => {
     next();
 
   }catch(err){
-    return res.status(401).json({ result: 'FAIL', code: -20, message: '잘못된 접근입니다.' });
+    return res.status(401).json({ result: 'FAIL', code: -20, message: '만료되었거나, 유효하지 않은 토큰입니다.' });
   }
 };
