@@ -14,7 +14,7 @@ exports.getFeeds = async (req, res) => {
 
         /*=====================================================================================
         #swagger.responses[400] = {
-        description: '필수로 받아야할 입력값이 들어오지 않았습니다.',
+        description: '필수로 받아야할 입력값(feedType)이 들어오지 않았습니다.',
         schema: { "result": "FAIL", 'code': -10, 'message': '필수 입력값 조회 실패', }
         }
         =====================================================================================*/
@@ -93,6 +93,13 @@ exports.postFeeds = async (req, res) => {
 
 
     if (!req.body.userCode || req.body.userCode === "") {
+
+        /*=====================================================================================
+        #swagger.responses[400] = {
+        description: '필수로 받아야할 입력값(userCod)가 들어오지 않았습니다.',
+        schema: { "result": "FAIL", 'code': -10, 'message': '필수 입력값 조회 실패', }
+        }
+        =====================================================================================*/
         return res.status(400).json({
             result: "Fail",
             code: -10,
@@ -175,7 +182,7 @@ exports.deleteFeeds = async (req, res) => {
 
         /*=====================================================================================
         #swagger.responses[400] = {
-        description: '필수로 받아야할 입력값이 들어오지 않았습니다.',
+        description: '필수로 받아야할 입력값(feedCode,userCod)가 들어오지 않았습니다.',
         schema: { "result": "FAIL", 'code': -10, 'message': '필수 입력값 조회 실패', }
         }
         =====================================================================================*/
@@ -197,7 +204,7 @@ exports.deleteFeeds = async (req, res) => {
         try {
             await Feeds.destroy({ where: { feedCode: feedCode } })
             /*=====================================================================================
-            #swagger.responses[200] = {
+                #swagger.responses[200] = {
                 description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
                 schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
             }
@@ -225,7 +232,7 @@ exports.deleteFeeds = async (req, res) => {
     } else {
         return res.status(400).json({
             /*=====================================================================================
-           #swagger.responses[400] = {
+                #swagger.responses[400] = {
                description: '비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
                schema: { "result": "FAIL", 'code': -4, 'message': "작성자가 아니라 삭제불가", }
            }
@@ -246,11 +253,12 @@ exports.updateFeeds = async (req, res) => {
     #swagger.description = '게시글 수정 API'
     ========================================================================================================*/
     if (!req.body.feedCode || !req.body.userCode || req.body.feedCode === "" || req.body.userCode === "") {
-        /*========================================================================================================
-        #swagger.tags = ['Feeds']
-        #swagger.summary = '게시글 수정 API'
-        #swagger.description = '게시글 수정 API'
-        ========================================================================================================*/
+        /*=====================================================================================
+       #swagger.responses[400] = {
+       description: '필수로 받아야할 입력값(feedCode,userCode,content)이 들어오지 않았습니다.',
+       schema: { "result": "FAIL", 'code': -10, 'message': '필수 입력값 조회 실패', }
+       }
+       =====================================================================================*/
         return res.status(400).json({
             result: "Fail",
             code: -10,
@@ -333,7 +341,7 @@ exports.likedFeed = async (req, res) => {
 
         /*=====================================================================================
         #swagger.responses[400] = {
-        description: '필수로 받아야할 입력값이 들어오지 않았습니다.',
+        description: '필수로 받아야할 입력값(feedCode,userCode)이 들어오지 않았습니다.',
         schema: { "result": "FAIL", 'code': -10, 'message': '필수 입력값 조회 실패', }
         }
         =====================================================================================*/
