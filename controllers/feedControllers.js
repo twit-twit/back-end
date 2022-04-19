@@ -41,8 +41,8 @@ exports.getFeeds = async (req, res) => {
 
             /*=====================================================================================
             #swagger.responses[200] = {
-            description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
-            schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
+                description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+                schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
             }
             =====================================================================================*/
             res.status(200).json({
@@ -110,8 +110,8 @@ exports.postFeeds = async (req, res) => {
             })
             /*=====================================================================================
             #swagger.responses[200] = {
-            description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
-            schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
+                description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+                schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
             }
             =====================================================================================*/
             res.status(201).json({
@@ -155,19 +155,19 @@ exports.deleteFeeds = async (req, res) => {
     console.log("@@@@", userFeed)
     if (Number(userCode) === userFeed) {
 
-        try {
-            await Feeds.destroy({ where: { feedCode: feedCode } })
-            /*=====================================================================================
-            #swagger.responses[200] = {
+    try {
+        await Feeds.destroy({ where: { feedCode: feedCode } })
+        /*=====================================================================================
+        #swagger.responses[200] = {
             description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
             schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
-            }
-            =====================================================================================*/
-            res.status(200).json({
-                result: "SUCCESS",
-                code: 0,
-                message: "게시글 삭제완료!"
-            })
+        }
+        =====================================================================================*/
+        res.status(200).json({
+            result: "SUCCESS",
+            code: 0,
+            message: "게시글 삭제완료!"
+        })
 
         } catch (err) {
             console.log(err)
@@ -227,8 +227,8 @@ exports.updateFeeds = async (req, res) => {
                 await Feeds.update({ content, feedUrl, feedImage }, { where: { feedCode: feedCode } })
                 /*=====================================================================================
                 #swagger.responses[200] = {
-                description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
-                schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
+                    description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+                    schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
                 }
                 =====================================================================================*/
                 res.status(200).json({
@@ -282,8 +282,8 @@ exports.likedFeed = async (req, res) => {
             await Liked.create({ userCode, feedCode })
             /*=====================================================================================
             #swagger.responses[200] = {
-            description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
-            schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
+                description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+                schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
             }
             =====================================================================================*/
             return res.status(200).json({
