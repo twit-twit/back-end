@@ -55,6 +55,7 @@ exports.postLogin = async (req, res) => {
  * 
  * FIXME:
  *  1. [V] image 업로드 시, jpg 또는 png 여부 체크해야함.
+ *  2. [ ] 이미 있는 ID인지 체크해야한다. Thunder Client로 넣을 때는 로직을 안태우기 때문에 여기도 검증해야한다.
  */
 exports.postSignUp = async (req, res) => {
     /*========================================================================================================
@@ -84,6 +85,17 @@ exports.postSignUp = async (req, res) => {
     }
 
     const {userId, password, confirmpassword, intro} = req.body;
+    const image = req.file === undefined ? null : '/image/' + req.file.filename
+
+    // ID 기존재 여부 검사
+    const findUserId = await Users.findOne({ where: {userId} });
+    /*=====================================================================================
+    #swagger.responses[400] = {
+        description: '비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+        schema: { "result": "FAIL", 'code': -2, 'message': '이미 가입된 ID', }
+    }
+    =====================================================================================*/
+    if(findUserId) return res.status(400).json({result: 'FAIL', code:-2, message:'이미 가입된 ID'});
 
     //패스워드 일치여부 검사
     if(password !== confirmpassword)
@@ -93,7 +105,7 @@ exports.postSignUp = async (req, res) => {
             schema: { "result": "FAIL", 'code': -2, 'message': '패스워드 불일치', }
         }
         =====================================================================================*/
-        return res.status(400).json({ result: 'FAIL', code: -2, message: '패스워드 불일치' });
+        return res.status(400).json({ result: 'FAIL', code: -3, message: '패스워드 불일치' });
 
     // 패스워드 암호화
     const hashPassword = bcrypt.hashSync(password, +process.env.SECRET_KEY);
@@ -102,7 +114,7 @@ exports.postSignUp = async (req, res) => {
         userId,
         password: hashPassword,
         intro,
-        img: '/image/' + req.file.filename,
+        img: image,
     });
     
     /*=====================================================================================
