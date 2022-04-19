@@ -26,7 +26,7 @@ const upload = multer({
 // 'image'라는 이름은 multipart.html의 <input type="file" name="image"> 에서 폼데이터 이름으로 온 것이다.
 router.post('/', authMiddleware, upload.single('feedImage'), feedController.postFeeds)
 router.get('/', authMiddleware, feedController.getFeeds)
-router.delete('/', authMiddleware, feedController.deleteFeeds)
+router.delete('/', feedController.deleteFeeds)
 router.put('/', authMiddleware, upload.single('feedImage'), feedController.updateFeeds)
 
 

@@ -147,35 +147,53 @@ exports.deleteFeeds = async (req, res) => {
     #swagger.summary = '게시글 삭제 API'
     #swagger.description = '게시글 삭제 API'
     ========================================================================================================*/
-    const { feedCode } = req.query;
+    const { feedCode, userCode } = req.query;
 
+    let userFeed = await Feeds.findAll({ where: { feedCode } }).then((user) => {
+        return user[0].userCode
+    })
+    console.log("@@@@", userFeed)
+    if (Number(userCode) === userFeed) {
 
-    try {
-        await Feeds.destroy({ where: { feedCode: feedCode } })
-        /*=====================================================================================
-        #swagger.responses[200] = {
-        description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
-        schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
-        }
-        =====================================================================================*/
-        res.status(200).json({
-            result: "SUCCESS",
-            code: 0,
-            message: "게시글 삭제완료!"
-        })
-
-    } catch (err) {
-        console.log(err)
-        res.status(400).json({
+        try {
+            await Feeds.destroy({ where: { feedCode: feedCode } })
             /*=====================================================================================
-  #swagger.responses[400] = {
-      description: '비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
-      schema: { "result": "FAIL", 'code': -4, 'message': "게시글 삭제 실패!", }
-  }
-  =====================================================================================*/
+            #swagger.responses[200] = {
+            description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+            schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
+            }
+            =====================================================================================*/
+            res.status(200).json({
+                result: "SUCCESS",
+                code: 0,
+                message: "게시글 삭제완료!"
+            })
+
+        } catch (err) {
+            console.log(err)
+            res.status(400).json({
+                /*=====================================================================================
+      #swagger.responses[400] = {
+          description: '비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+          schema: { "result": "FAIL", 'code': -4, 'message': "게시글 삭제 실패!", }
+      }
+      =====================================================================================*/
+                result: "FAIL",
+                code: 4,
+                message: "게시글 삭제 실패!"
+            })
+        }
+    } else {
+        return res.status(400).json({
+            /*=====================================================================================
+       #swagger.responses[400] = {
+           description: '비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+           schema: { "result": "FAIL", 'code': -4, 'message': "작성자가 아니라 삭제불가", }
+       }
+       =====================================================================================*/
             result: "FAIL",
-            code: 4,
-            message: "게시글 삭제 실패!"
+            code: -4,
+            message: "작성한 사용자가 아니라 삭제할 수 없습니다."
         })
     }
 }
