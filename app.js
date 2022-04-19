@@ -20,7 +20,7 @@ const removeHeader = (req, res, next) => {
 
 app.use(
     cors({
-        origin: ['http://localhost:3000', 'http://3.36.98.164'],
+        origin: ['http://localhost:3000', 'http://13.125.34.252'],
         credentials: true,
     })
 )
