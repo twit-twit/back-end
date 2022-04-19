@@ -145,4 +145,7 @@ dist
 # uploads
 uploads
 
+#swagger-outpu.json
+swagger-output.json
+
 # End of https://www.toptal.com/developers/gitignore/api/node
