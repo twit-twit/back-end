@@ -112,6 +112,9 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "OK"
+          },
           "401": {
             "description": "Unauthorized"
           }
@@ -168,7 +171,7 @@
                 },
                 "code": {
                   "type": "number",
-                  "example": -1
+                  "example": -2
                 },
                 "message": {
                   "type": "string",
@@ -183,10 +186,33 @@
         }
       }
     },
+    "/api/users/auth": {
+      "get": {
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
     "/api/feed/": {
       "post": {
-        "description": "",
+        "tags": [
+          "Feeds"
+        ],
+        "summary": "게시글 작성 API",
+        "description": "게시글 작성 API",
         "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "body",
             "in": "body",
@@ -198,66 +224,164 @@
                 },
                 "content": {
                   "example": "any"
+                },
+                "feedUrl": {
+                  "example": "any"
                 }
               }
             }
           }
         ],
         "responses": {
+          "200": {
+            "description": "정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "type": "string",
+                  "example": "SUCCESS"
+                },
+                "code": {
+                  "type": "number",
+                  "example": 0
+                },
+                "message": {
+                  "type": "string",
+                  "example": "정상"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
           "201": {
             "description": "Created"
           },
           "400": {
             "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       },
       "get": {
-        "description": "",
+        "tags": [
+          "Feeds"
+        ],
+        "summary": "게시글 조회 API",
+        "description": "게시글 조회 API",
         "parameters": [
           {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "feedType",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "userCode",
             "in": "query",
             "type": "string"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "type": "string",
+                  "example": "SUCCESS"
+                },
+                "code": {
+                  "type": "number",
+                  "example": 0
+                },
+                "message": {
+                  "type": "string",
+                  "example": "정상"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "400": {
             "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
-      }
-    },
-    "/api/feed/{feedCode}": {
+      },
       "delete": {
-        "description": "",
+        "tags": [
+          "Feeds"
+        ],
+        "summary": "게시글 삭제 API",
+        "description": "게시글 삭제 API",
         "parameters": [
           {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
             "name": "feedCode",
-            "in": "path",
-            "required": true,
+            "in": "query",
             "type": "string"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "type": "string",
+                  "example": "SUCCESS"
+                },
+                "code": {
+                  "type": "number",
+                  "example": 0
+                },
+                "message": {
+                  "type": "string",
+                  "example": "정상"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "400": {
             "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       },
       "put": {
-        "description": "",
+        "tags": [
+          "Feeds"
+        ],
+        "summary": "게시글 수정 API",
+        "description": "게시글 수정 API",
         "parameters": [
           {
-            "name": "feedCode",
-            "in": "path",
-            "required": true,
+            "name": "authorization",
+            "in": "header",
             "type": "string"
           },
           {
@@ -266,10 +390,16 @@
             "schema": {
               "type": "object",
               "properties": {
-                "title": {
+                "feedCode": {
+                  "example": "any"
+                },
+                "userCode": {
                   "example": "any"
                 },
                 "content": {
+                  "example": "any"
+                },
+                "feedUrl": {
                   "example": "any"
                 }
               }
@@ -278,7 +408,383 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "type": "string",
+                  "example": "SUCCESS"
+                },
+                "code": {
+                  "type": "number",
+                  "example": 0
+                },
+                "message": {
+                  "type": "string",
+                  "example": "정상"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/friendships/": {
+      "get": {
+        "tags": [
+          "follows"
+        ],
+        "summary": "팔로우 조회 API",
+        "description": "내가 팔로우한 모든 유저 목록을 조회하는 API",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "userCode",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "type": "string",
+                  "example": "SUCCESS"
+                },
+                "code": {
+                  "type": "number",
+                  "example": 0
+                },
+                "message": {
+                  "type": "string",
+                  "example": "팔로우 조회 성공"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "type": "string",
+                  "example": "FAIL"
+                },
+                "code": {
+                  "type": "number",
+                  "example": -5
+                },
+                "message": {
+                  "type": "string",
+                  "example": "팔로우 조회 실패"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "follows"
+        ],
+        "summary": "팔로우 API",
+        "description": "팔로우 API",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "userCode": {
+                  "example": "any"
+                },
+                "followUserCode": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "type": "string",
+                  "example": "SUCCESS"
+                },
+                "code": {
+                  "type": "number",
+                  "example": 0
+                },
+                "message": {
+                  "type": "string",
+                  "example": "팔로우 성공"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "type": "string",
+                  "example": "FAIL"
+                },
+                "code": {
+                  "type": "number",
+                  "example": -5
+                },
+                "message": {
+                  "type": "string",
+                  "example": "팔로우 실패"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "follows"
+        ],
+        "summary": "팔로우 취소 API",
+        "description": "이미 팔로우했던 유저를 내가 팔로우한 유저 목록에서 삭제하는 API",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "userCode",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "followUserCode",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "type": "string",
+                  "example": "SUCCESS"
+                },
+                "code": {
+                  "type": "number",
+                  "example": 0
+                },
+                "message": {
+                  "type": "string",
+                  "example": "팔로우 취소 성공"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "type": "string",
+                  "example": "FAIL"
+                },
+                "code": {
+                  "type": "number",
+                  "example": -5
+                },
+                "message": {
+                  "type": "string",
+                  "example": "팔로우 취소 실패"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/friendships/followers": {
+      "get": {
+        "tags": [
+          "follows"
+        ],
+        "summary": "팔로워 조회 API",
+        "description": "나를 팔로우한 모든 유저 목록을 조회하는 API",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "userCode",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "type": "string",
+                  "example": "SUCCESS"
+                },
+                "code": {
+                  "type": "number",
+                  "example": 0
+                },
+                "message": {
+                  "type": "string",
+                  "example": "팔로워 조회 성공"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "type": "string",
+                  "example": "FAIL"
+                },
+                "code": {
+                  "type": "number",
+                  "example": -5
+                },
+                "message": {
+                  "type": "string",
+                  "example": "팔로워 조회 실패"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/liked/": {
+      "post": {
+        "tags": [
+          "Feeds"
+        ],
+        "summary": "게시글 좋아요 API",
+        "description": "게시글 좋아요 API",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "userCode": {
+                  "example": "any"
+                },
+                "feedCode": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "result": {
+                  "type": "string",
+                  "example": "SUCCESS"
+                },
+                "code": {
+                  "type": "number",
+                  "example": 0
+                },
+                "message": {
+                  "type": "string",
+                  "example": "정상"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "400": {
             "description": "Bad Request"

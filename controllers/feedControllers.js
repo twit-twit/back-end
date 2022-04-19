@@ -4,11 +4,12 @@ const { displayedAt } = require("../helpers/displayTime");
 
 //게시글 조회
 exports.getFeeds = async (req, res) => {
-/*========================================================================================================
-#swagger.tags = ['Feeds']
-#swagger.summary = '게시글 조회 API'
-#swagger.description = '게시글 조회 API'
-========================================================================================================*/
+    /*========================================================================================================
+    #swagger.tags = ['Feeds']
+    #swagger.summary = '게시글 조회 API'
+    #swagger.description = '게시글 조회 API'
+    
+    ========================================================================================================*/
     const { feedType, userCode } = req.query;
 
     try {
@@ -28,6 +29,16 @@ exports.getFeeds = async (req, res) => {
             const user = await Users.findOne({ where: { userCode: userCode } })
             const feeds = await user.getFeeds();
             let result = feeds.sort((a, b) => b.createdAt - a.createAt)
+
+            for (let i = 0; i < result.length; i++) {
+                let userCreatedAt = result[i].createdAt;
+                let userUpdatedAt = result[i].updatedAt;
+                result[i].dataValues.createdAt = displayedAt(userCreatedAt)
+                result[i].dataValues.updatedAt = displayedAt(userUpdatedAt)
+
+            }
+
+
             /*=====================================================================================
             #swagger.responses[200] = {
                 description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
@@ -45,6 +56,12 @@ exports.getFeeds = async (req, res) => {
     } catch (err) {
         console.log(err)
         res.status(400).json({
+            /*=====================================================================================
+  #swagger.responses[400] = {
+      description: '비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+      schema: { "result": "FAIL", 'code': -4, 'message': "게시글 조회 실패!", }
+  }
+  =====================================================================================*/
             result: 'FAIL',
             code: -4,
             message: "게시글 조회 실패!"
@@ -54,11 +71,11 @@ exports.getFeeds = async (req, res) => {
 
 //게시글 작성
 exports.postFeeds = async (req, res) => {
-/*========================================================================================================
-#swagger.tags = ['Feeds']
-#swagger.summary = '게시글 작성 API'
-#swagger.description = '게시글 작성 API'
-========================================================================================================*/
+    /*========================================================================================================
+    #swagger.tags = ['Feeds']
+    #swagger.summary = '게시글 작성 API'
+    #swagger.description = '게시글 작성 API'
+    ========================================================================================================*/
 
     const { userCode, content, feedUrl } = req.body;
     console.log("게시글 작성", content)
@@ -107,6 +124,12 @@ exports.postFeeds = async (req, res) => {
     } catch (err) {
         console.log(err)
         res.status(400).json({
+            /*=====================================================================================
+  #swagger.responses[400] = {
+      description: '비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+      schema: { "result": "FAIL", 'code': -4, 'message': "게시글 작성 실패!", }
+  }
+  =====================================================================================*/
             result: 'FAIL',
             code: -4,
             message: "게시글 작성 실패!"
@@ -119,13 +142,18 @@ exports.postFeeds = async (req, res) => {
 
 //게시글 삭제
 exports.deleteFeeds = async (req, res) => {
-/*========================================================================================================
-#swagger.tags = ['Feeds']
-#swagger.summary = '게시글 삭제 API'
-#swagger.description = '게시글 삭제 API'
-========================================================================================================*/
-    const { feedCode } = req.query;
+    /*========================================================================================================
+    #swagger.tags = ['Feeds']
+    #swagger.summary = '게시글 삭제 API'
+    #swagger.description = '게시글 삭제 API'
+    ========================================================================================================*/
+    const { feedCode, userCode } = req.query;
 
+    let userFeed = await Feeds.findAll({ where: { feedCode } }).then((user) => {
+        return user[0].userCode
+    })
+    console.log("@@@@", userFeed)
+    if (Number(userCode) === userFeed) {
 
     try {
         await Feeds.destroy({ where: { feedCode: feedCode } })
@@ -141,12 +169,31 @@ exports.deleteFeeds = async (req, res) => {
             message: "게시글 삭제완료!"
         })
 
-    } catch (err) {
-        console.log(err)
-        res.status(400).json({
+        } catch (err) {
+            console.log(err)
+            res.status(400).json({
+                /*=====================================================================================
+      #swagger.responses[400] = {
+          description: '비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+          schema: { "result": "FAIL", 'code': -4, 'message': "게시글 삭제 실패!", }
+      }
+      =====================================================================================*/
+                result: "FAIL",
+                code: 4,
+                message: "게시글 삭제 실패!"
+            })
+        }
+    } else {
+        return res.status(400).json({
+            /*=====================================================================================
+       #swagger.responses[400] = {
+           description: '비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+           schema: { "result": "FAIL", 'code': -4, 'message': "작성자가 아니라 삭제불가", }
+       }
+       =====================================================================================*/
             result: "FAIL",
-            code: 4,
-            message: "게시글 삭제 실패!"
+            code: -4,
+            message: "작성한 사용자가 아니라 삭제할 수 없습니다."
         })
     }
 }
@@ -192,6 +239,12 @@ exports.updateFeeds = async (req, res) => {
             }
         } catch (err) {
             console.log(err)
+            /*=====================================================================================
+       #swagger.responses[400] = {
+           description: '비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+           schema: { "result": "FAIL", 'code': -4, 'message': "게시글 수정 실패!", }
+       }
+       =====================================================================================*/
             res.status(400).json({
                 result: "FAIL",
                 code: -4,
@@ -200,6 +253,12 @@ exports.updateFeeds = async (req, res) => {
         }
     } else {
         return res.status(400).json({
+            /*=====================================================================================
+       #swagger.responses[400] = {
+           description: '비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+           schema: { "result": "FAIL", 'code': -4, 'message': "작성자가 아니라 수정불가", }
+       }
+       =====================================================================================*/
             result: "FAIL",
             code: -4,
             message: "작성한 사용자가 아니라 수정할 수 없습니다."
@@ -230,20 +289,35 @@ exports.likedFeed = async (req, res) => {
             return res.status(200).json({
                 result: 'SUCCESS',
                 code: 0,
+                likeState: 'true',
                 message: "좋아요"
             })
         } else {
             await Liked.destroy({
                 where: { [Op.and]: [{ feedCode }, { userCode }] }
+
             })
+            /*=====================================================================================
+      #swagger.responses[400] = {
+          description: '비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+          schema: { "result": "FAIL", 'code': -4, 'message': "좋아요 취소, }
+      }
+      =====================================================================================*/
             return res.status(200).json({
                 result: 'SUCCESS',
                 code: 0,
+                likeState: 'false',
                 message: "좋아요 취소"
             })
         }
     } catch (err) {
         console.log(err)
+        /*=====================================================================================
+#swagger.responses[400] = {
+ description: '비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+ schema: { "result": "FAIL", 'code': -4, 'message': "좋아요 에러 발생하여 불가, }
+}
+=====================================================================================*/
         res.status(400).json({
             result: "FAIL",
             code: -4,
