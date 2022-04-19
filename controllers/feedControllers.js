@@ -155,19 +155,19 @@ exports.deleteFeeds = async (req, res) => {
     console.log("@@@@", userFeed)
     if (Number(userCode) === userFeed) {
 
-    try {
-        await Feeds.destroy({ where: { feedCode: feedCode } })
-        /*=====================================================================================
-        #swagger.responses[200] = {
-            description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
-            schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
-        }
-        =====================================================================================*/
-        res.status(200).json({
-            result: "SUCCESS",
-            code: 0,
-            message: "게시글 삭제완료!"
-        })
+        try {
+            await Feeds.destroy({ where: { feedCode: feedCode } })
+            /*=====================================================================================
+            #swagger.responses[200] = {
+                description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+                schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
+            }
+            =====================================================================================*/
+            res.status(200).json({
+                result: "SUCCESS",
+                code: 0,
+                message: "게시글 삭제완료!"
+            })
 
         } catch (err) {
             console.log(err)
@@ -299,8 +299,8 @@ exports.likedFeed = async (req, res) => {
             })
             /*=====================================================================================
             #swagger.responses[400] = {
-                    description: '비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
-                    schema: { "result": "FAIL", 'code': -4, 'message': "좋아요 취소", }
+                description: '비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+                schema: { "result": "FAIL", 'code': -4, 'message': "좋아요 취소" }
             }
             =====================================================================================*/
             return res.status(200).json({
@@ -314,8 +314,8 @@ exports.likedFeed = async (req, res) => {
         console.log(err)
         /*=====================================================================================
         #swagger.responses[400] = {
-            description: '비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
-            schema: { "result": "FAIL", 'code': -4, 'message': "좋아요 에러 발생하여 불가", }
+           description: '비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+           schema: { "result": "FAIL", 'code': -4, 'message': "좋아요 에러 발생하여 불가" }
         }
         =====================================================================================*/
         res.status(400).json({
