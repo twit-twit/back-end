@@ -4,7 +4,7 @@ const { displayedAt } = require("../helpers/displayTime");
 
 //게시글 조회
 exports.getFeeds = async (req, res) => {
-    /*========================================================================================================
+/*========================================================================================================
 #swagger.tags = ['Feeds']
 #swagger.summary = '게시글 조회 API'
 #swagger.description = '게시글 조회 API'
@@ -40,11 +40,11 @@ exports.getFeeds = async (req, res) => {
 
 
             /*=====================================================================================
-             #swagger.responses[200] = {
-              description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
-              schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
-          }
-          =====================================================================================*/
+            #swagger.responses[200] = {
+            description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+            schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
+            }
+            =====================================================================================*/
             res.status(200).json({
                 result: "SUCCESS",
                 code: 0,
@@ -65,7 +65,7 @@ exports.getFeeds = async (req, res) => {
 
 //게시글 작성
 exports.postFeeds = async (req, res) => {
-    /*========================================================================================================
+/*========================================================================================================
 #swagger.tags = ['Feeds']
 #swagger.summary = '게시글 작성 API'
 #swagger.description = '게시글 작성 API'
@@ -103,11 +103,11 @@ exports.postFeeds = async (req, res) => {
                 feedImage: '/image/' + req.file.filename
             })
             /*=====================================================================================
-                      #swagger.responses[200] = {
-                    description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
-                    schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
-                }
-                =====================================================================================*/
+            #swagger.responses[200] = {
+            description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+            schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
+            }
+            =====================================================================================*/
             res.status(201).json({
                 result: 'SUCCESS',
                 code: 0,
@@ -130,7 +130,7 @@ exports.postFeeds = async (req, res) => {
 
 //게시글 삭제
 exports.deleteFeeds = async (req, res) => {
-    /*========================================================================================================
+/*========================================================================================================
 #swagger.tags = ['Feeds']
 #swagger.summary = '게시글 삭제 API'
 #swagger.description = '게시글 삭제 API'
@@ -141,9 +141,9 @@ exports.deleteFeeds = async (req, res) => {
     try {
         await Feeds.destroy({ where: { feedCode: feedCode } })
         /*=====================================================================================
-              #swagger.responses[200] = {
-            description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
-            schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
+        #swagger.responses[200] = {
+        description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+        schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
         }
         =====================================================================================*/
         res.status(200).json({
@@ -166,10 +166,10 @@ exports.deleteFeeds = async (req, res) => {
 //게시글 수정
 exports.updateFeeds = async (req, res) => {
     /*========================================================================================================
-#swagger.tags = ['Feeds']
-#swagger.summary = '게시글 수정 API'
-#swagger.description = '게시글 수정 API'
-========================================================================================================*/
+    #swagger.tags = ['Feeds']
+    #swagger.summary = '게시글 수정 API'
+    #swagger.description = '게시글 수정 API'
+    ========================================================================================================*/
     const { feedCode, userCode, content, feedUrl } = req.body;
 
     //게시글 작성자 찾기
@@ -190,11 +190,11 @@ exports.updateFeeds = async (req, res) => {
                 const feedImage = '/image/' + req.file.filename
                 await Feeds.update({ content, feedUrl, feedImage }, { where: { feedCode: feedCode } })
                 /*=====================================================================================
-                    #swagger.responses[200] = {
-                  description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
-                  schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
-              }
-              =====================================================================================*/
+                #swagger.responses[200] = {
+                description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+                schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
+                }
+                =====================================================================================*/
                 res.status(200).json({
                     result: "SUCCESS",
                     code: 0,
@@ -233,11 +233,11 @@ exports.likedFeed = async (req, res) => {
         if (!checkLike) {
             await Liked.create({ userCode, feedCode })
             /*=====================================================================================
-                    #swagger.responses[200] = {
-                  description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
-                  schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
-              }
-              =====================================================================================*/
+            #swagger.responses[200] = {
+            description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+            schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
+            }
+            =====================================================================================*/
             return res.status(200).json({
                 result: 'SUCCESS',
                 code: 0,
