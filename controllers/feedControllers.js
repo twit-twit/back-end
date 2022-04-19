@@ -1,6 +1,5 @@
-const { Feeds } = require("../models")
-const { Users } = require("../models")
-
+const { Feeds, Users, Liked } = require("../models")
+const { Op } = require('sequelize');
 
 //게시글 조회
 exports.getFeeds = async (req, res) => {
@@ -198,3 +197,39 @@ exports.updateFeeds = async (req, res) => {
     }
 
 }
+
+//게시글 좋아요
+exports.likedFeed = async (req, res) => {
+    const { userCode, feedCode } = req.body;
+    try {
+        const checkLike = await Liked.findOne({ where: { feedCode, userCode } })
+
+        if (!checkLike) {
+            await Liked.create({ userCode, feedCode })
+            return res.status(200).json({
+                result: 'SUCCESS',
+                code: 0,
+                message: "좋아요"
+            })
+        } else {
+            await Liked.destroy({
+                where: { [Op.and]: [{ feedCode }, { userCode }] }
+            })
+            return res.status(200).json({
+                result: 'SUCCESS',
+                code: 0,
+                message: "좋아요 취소"
+            })
+        }
+    } catch (err) {
+        console.log(err)
+        res.status(400).json({
+            result: "FAIL",
+            code: -4,
+            message: "에러가 발생하여 좋아요가 불가합니다."
+        })
+    }
+
+}
+
+
