@@ -18,7 +18,12 @@ const removeHeader = (req, res, next) => {
     next();
 };
 
-app.use(cors());
+app.use(
+    cors({
+        origin: ['http://localhost:3000', 'http://3.36.98.164'],
+        credentials: true,
+    })
+)
 app.use(morgan("combined"));
 app.use(express.json());
 app.use(express.static("public"));
@@ -34,7 +39,7 @@ app.use('/api', Router);
 
 //아래 코드는 항상 가장 아래에 존재해야함.
 app.use((err, req, res, next) => {
-    res.json({result: 'FAIL', code: -20, message: err.message});
+    res.json({ result: 'FAIL', code: -20, message: err.message });
 })
 
 
