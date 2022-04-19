@@ -30,8 +30,8 @@ exports.getFeeds = async (req, res) => {
             let result = feeds.sort((a, b) => b.createdAt - a.createAt)
             /*=====================================================================================
             #swagger.responses[200] = {
-            description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
-            schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
+                description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+                schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
             }
             =====================================================================================*/
             res.status(200).json({
@@ -93,8 +93,8 @@ exports.postFeeds = async (req, res) => {
             })
             /*=====================================================================================
             #swagger.responses[200] = {
-            description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
-            schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
+                description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+                schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
             }
             =====================================================================================*/
             res.status(201).json({
@@ -131,8 +131,8 @@ exports.deleteFeeds = async (req, res) => {
         await Feeds.destroy({ where: { feedCode: feedCode } })
         /*=====================================================================================
         #swagger.responses[200] = {
-        description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
-        schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
+            description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+            schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
         }
         =====================================================================================*/
         res.status(200).json({
@@ -180,8 +180,8 @@ exports.updateFeeds = async (req, res) => {
                 await Feeds.update({ content, feedUrl, feedImage }, { where: { feedCode: feedCode } })
                 /*=====================================================================================
                 #swagger.responses[200] = {
-                description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
-                schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
+                    description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+                    schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
                 }
                 =====================================================================================*/
                 res.status(200).json({
@@ -223,8 +223,8 @@ exports.likedFeed = async (req, res) => {
             await Liked.create({ userCode, feedCode })
             /*=====================================================================================
             #swagger.responses[200] = {
-            description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
-            schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
+                description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+                schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
             }
             =====================================================================================*/
             return res.status(200).json({
