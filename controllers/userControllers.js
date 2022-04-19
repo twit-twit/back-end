@@ -1,8 +1,7 @@
 // Modules
 const Joi = require("joi");
-const jwt = require("jsonwebtoken");
+const jwt = require("../lib/jwt-util");
 const bcrypt = require("bcrypt");
-
 const {Users} = require('../models');
 
 /**
@@ -31,13 +30,18 @@ exports.postLogin = async (req, res) => {
     if(!existHashPassword) // bcrypt.compareSync() 메소드는 bcrypt로 DB에 저장된 패스워드와 비교하여 동일한 경우 true를 반환함.
         return res.status(401).json({ result: 'FAIL', code: -1, message: 'ID 또는 PW가 일치하지 않음' });
 
-    // 토큰 유효시간 60분 설정 및 토큰 발급
-    const token = jwt.sign({userId: findUserId.userId}, process.env.SECRET_KEY, {expiresIn: '60m'});
+    // Access 토큰, Refresh 토큰 생성
+    const accessToken = jwt.sign(findUserId);
+    const refreshToken = jwt.refresh();
+
+    // Refresh 토큰 DB 내 저장
+    const temp = await Users.update({ refreshToken: refreshToken }, { where: { userCode: findUserId.userCode } });
+
     res.status(200).json({
         result:'SUCCESS',
         code:0,
         message:'정상',
-        response: token,
+        response: {accessToken, refreshToken}
     });
 }
 
@@ -115,6 +119,7 @@ exports.postSignUp = async (req, res) => {
         password: hashPassword,
         intro,
         img: image,
+        refreshToken: null // 사용자가 로그인 할 때 사용하기 위해 기본 값을 null로 초기화한다.
     });
     
     /*=====================================================================================
