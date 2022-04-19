@@ -1,5 +1,6 @@
 const { Feeds, Users, Liked } = require("../models")
 const { Op } = require('sequelize');
+const { displayedAt } = require("../helpers/displayTime");
 
 //게시글 조회
 exports.getFeeds = async (req, res) => {
@@ -12,13 +13,21 @@ exports.getFeeds = async (req, res) => {
 
     try {
         if (feedType === 'all') {
-            const feedArr = await Feeds.findAll({})
+            let feedArr = await Feeds.findAll({})
+
             let result = feedArr.sort((a, b) => b.createdAt - a.createdAt)
+            for (let i = 0; i < result.length; i++) {
+                let feedCreatedAt = result[i].createdAt
+                let feedUpdatedAt = result[i].updatedAt
+                result[i].dataValues.createdAt = displayedAt(feedCreatedAt)
+                result[i].dataValues.updatedAt = displayedAt(feedUpdatedAt)
+            }
             res.status(200).json({ result: "SUCCESS", code: 0, result });
 
         } else if (feedType === "user") {
             const user = await Users.findOne({ where: { userCode: userCode } })
             const feeds = await user.getFeeds();
+            let result = feeds.sort((a, b) => b.createdAt - a.createAt)
             /*=====================================================================================
              #swagger.responses[200] = {
               description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
@@ -28,7 +37,7 @@ exports.getFeeds = async (req, res) => {
             res.status(200).json({
                 result: "SUCCESS",
                 code: 0,
-                feeds
+                result
             })
 
         }
@@ -152,6 +161,7 @@ exports.updateFeeds = async (req, res) => {
 ========================================================================================================*/
     const { feedCode, userCode, content, feedUrl } = req.body;
 
+    //게시글 작성자 찾기
     let userFeed = await Feeds.findAll({ where: { feedCode } }).then((user) => {
         return user[0].userCode
     })
@@ -200,12 +210,23 @@ exports.updateFeeds = async (req, res) => {
 
 //게시글 좋아요
 exports.likedFeed = async (req, res) => {
+    /*========================================================================================================
+    #swagger.tags = ['Feeds']
+    #swagger.summary = '게시글 좋아요 API'
+    #swagger.description = '게시글 좋아요 API'
+    ========================================================================================================*/
     const { userCode, feedCode } = req.body;
     try {
         const checkLike = await Liked.findOne({ where: { feedCode, userCode } })
 
         if (!checkLike) {
             await Liked.create({ userCode, feedCode })
+            /*=====================================================================================
+                    #swagger.responses[200] = {
+                  description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+                  schema: { "result": "SUCCESS", 'code': 0, 'message': '정상', }
+              }
+              =====================================================================================*/
             return res.status(200).json({
                 result: 'SUCCESS',
                 code: 0,
