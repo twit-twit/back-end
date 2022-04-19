@@ -16,11 +16,13 @@ module.exports = async (req, res, next) => {
   try{
     const { userId } = jwt.verify(tokenValue, process.env.SECRET_KEY);
     const findUser = await Users.findOne({ where: {userId} });
-    console.log(findUser);
     
-    if (!findUser) return Storage.removeItem('token');
+    // payload 내 아이디가 DB 내 존재하지 않는다면, 에러를 발생시킨다.
+    if (!findUser) return new Error();
     res.locals.user = findUser;
+
     next();
+
   }catch(err){
     return res.status(401).json({ result: 'FAIL', code: -20, message: '잘못된 접근입니다.' });
   }

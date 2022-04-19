@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const refresh = require('../lib/jwt-refresh');
 
 const multer = require('multer');
 
@@ -45,5 +46,6 @@ router.post('/', upload.single('image'), userController.postSignUp);
 router.post('/login', userController.postLogin);
 router.get('/dup', userController.getDuplicateUserId);
 router.get('/auth', userController.getValidAuthCheck);
+router.get('/refresh', refresh);
 
 module.exports = router;

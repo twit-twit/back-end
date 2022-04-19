@@ -10,7 +10,6 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      console.log(models)
       // Feeds.belongsTo(models.Users, { foreignKey: "userCode", onDelete: "CASCADE", });
       Feeds.hasMany(models.Liked, { foreignKey: "feedCode" })
       Feeds.hasMany(models.Comment, { foreignKey: "feedCode" })
