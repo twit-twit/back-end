@@ -271,6 +271,7 @@ exports.likedFeed = async (req, res) => {
             return res.status(200).json({
                 result: 'SUCCESS',
                 code: 0,
+                likeState: 'true',
                 message: "좋아요"
             })
         } else {
@@ -287,6 +288,7 @@ exports.likedFeed = async (req, res) => {
             return res.status(200).json({
                 result: 'SUCCESS',
                 code: 0,
+                likeState: 'false',
                 message: "좋아요 취소"
             })
         }
