@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       console.log(models)
       // Feeds.belongsTo(models.Users, { foreignKey: "userCode", onDelete: "CASCADE", });
       Feeds.hasMany(models.Liked, { foreignKey: "feedCode" })
+      Feeds.hasMany(models.Comment, { foreignKey: "feedCode" })
       models.Feeds.belongsTo(models.Users, { foreignKey: { name: "userCode", allowNull: false }, onDelete: "CASCADE", });
     }
   }
