@@ -248,3 +248,74 @@ exports.getMyFollowers = async (req, res) => {
         })
     }
 }
+
+exports.getRecommendFriends = async (req, res) => {
+    /*========================================================================================================
+    #swagger.tags = ['follows']
+    #swagger.summary = '팔로우 추천 API'
+    #swagger.description = '내가 팔로우하지 않은 유저 목록을 조회하는 API'
+    ========================================================================================================*/
+    const { userCode } = req.query;
+    const isUser = await Users.findOne({ where: {userCode} })
+    if (!isUser) {
+        /*=====================================================================================
+        #swagger.responses[400] = {
+            description: '입력 받은 userCode가 존재하지 않는 유저일 때, 아래 예제와 같은 형태로 응답받습니다.',
+            schema: { "result": "FAIL", 'code': -5, 'message': "팔로우 추천 실패", }
+        }
+        =====================================================================================*/
+        return res.status(400).json({
+            result: 'FAIL',
+            code: -5,
+            message: "팔로우 추천 실패"
+        })
+    }
+    try {
+        // const myFollowers = await Follows.findAll({
+        //     attributes: { exclude: ['followId', 'followUserCode', 'createdAt', 'updatedAt'] },
+        //     where: {
+        //         followUserCode: userCode
+        //     }
+        // })
+        const myFollows = await Follows.findAll({
+            where: {
+                userCode
+            }
+        }).map((x)=>{return x.followUserCode})
+        console.log('myFollows', myFollows)
+
+        let recommendFriendships = await Users.findAll({
+            attributes: { exclude: ['userId', 'password', 'intro', 'img', 'createdAt', 'updatedAt'] },
+            where: {
+                userCode: {
+                    [Op.notIn]: myFollows
+                }
+            }
+        })
+        /*=====================================================================================
+        #swagger.responses[200] = {
+            description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+            schema: { "result": "SUCCESS", 'code': 0, 'message': '팔로우 추천 성공', }
+        }
+        =====================================================================================*/
+        return res.status(200).json({
+            result: 'SUCCESS',
+            code: 0,
+            message:'팔로우 추천 성공',
+            recommendFriendships
+        })
+    } catch (err) {
+        console.log(err)
+        /*=====================================================================================
+        #swagger.responses[400] = {
+            description: '비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+            schema: { "result": "FAIL", 'code': -5, 'message': "팔로우 추천 실패", }
+        }
+        =====================================================================================*/
+        return res.status(400).json({
+            result: 'FAIL',
+            code: -5,
+            message: "팔로우 추천 실패"
+        })
+    }
+}
