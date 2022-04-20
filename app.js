@@ -9,8 +9,14 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerFile = require("./swagger-output");
 const expressBasicAuth = require('express-basic-auth');
 
+const http = require('http');
+const https = require('https');
+const fs = require('fs');
+
 
 const app = express();
+
+
 
 const removeHeader = (req, res, next) => {
     //x-Powerd-By 제거
@@ -41,10 +47,30 @@ app.use('/api', Router);
 app.use((err, req, res, next) => {
     res.json({ result: 'FAIL', code: -20, message: err.message });
 })
+if(process.env.REAL){
+    const privateKey = fs.readFileSync('/etc/letsencrypt/live/sparta-hs.shop/privkey.pem', 'utf8');
+    const certificate = fs.readFileSync('/etc/letsencrypt/live/sparta-hs.shop/cert.pem', 'utf8');
+    const ca = fs.readFileSync('/etc/letsencrypt/live/sparta-hs.shop/chain.pem', 'utf8');
 
+    const credentials = {
+        key: privateKey,
+        cert: certificate,
+        ca: ca
+    };
 
+    // Starting both http & https servers
+    const httpServer = http.createServer(app);
+    const httpsServer = https.createServer(credentials, app);
 
+    httpServer.listen(80, () => {
+        console.log('HTTP Server running on port 80');
+    });
 
-app.listen(3000, () => {
-    console.log(`Listening on : http://localhost:3000`)
-})
+    httpsServer.listen(443, () => {
+        console.log('HTTPS Server running on port 443');
+    });
+}else{
+    app.listen(3000, () => {
+        console.log(`Listening on : http://localhost:3000`)
+    });
+}
