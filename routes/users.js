@@ -43,6 +43,7 @@ const userController = require('../controllers/userControllers');
 const authMiddleware = require('../middlewares/users/auth-middleware');
 
 router.post('/', upload.single('image'), userController.postSignUp);
+router.put('/', upload.single('image'), userController.postUserUpdate)
 router.post('/login', userController.postLogin);
 router.get('/dup', userController.getDuplicateUserId);
 router.get('/auth', userController.getValidAuthCheck);

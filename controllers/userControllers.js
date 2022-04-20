@@ -35,14 +35,9 @@ exports.postLogin = async (req, res) => {
     const refreshToken = jwt.refresh();
 
     // Refresh 토큰 DB 내 저장
-    const temp = await Users.update({ refreshToken: refreshToken }, { where: { userCode: findUserId.userCode } });
-
-    res.status(200).json({
-        result:'SUCCESS',
-        code:0,
-        message:'정상',
-        response: {accessToken, refreshToken}
-    });
+    const doneSqlUpdate = await Users.update({ refreshToken: refreshToken }, { where: { userCode: findUserId.userCode } });
+    if(doneSqlUpdate) return res.status(200).json({ result:'SUCCESS', code:0, message:'정상', response: {accessToken, refreshToken} });
+    else return res.status(400).json({ result:'FAIL', code:-2, message:'Refresh Token이 저장되지 않았습니다.', response: {accessToken, refreshToken} });
 }
 
 /**
@@ -199,4 +194,51 @@ exports.getValidAuthCheck = (req, res) => {
     } catch (err) {
         res.status(400).json({ result: "FAIL", message: "유저를 확인할 수 없습니다." });
     }
+}
+
+/**
+ * 2022. 04. 19. HSYOO.
+ * TODO:
+ *  1. 클라이언트에서 요청받은 정보 내 필수입력값을 검사한다.
+ *      1-1. 필수입력값 : userCode
+ *  2. 사용자 정보를 업데이트하기 전, 해당 사용자의 존재여부를 검사한다.
+ * 
+ * 
+ * FIXME:
+ *  1. 
+ */
+exports.postUserUpdate = async (req, res) => {
+
+    const bodySchema = Joi.object({
+        userCode: Joi.required().error(new Error('유효성 검사 실패 : userCode는 필수 값 입니다.')),
+        intro: Joi.any(),
+        image: Joi.any()
+    });
+    try {
+        await bodySchema.validateAsync(req.body);
+    } catch (error) {
+        return res.status(400).json({ result: "FAIL", code: -1, message: error.message });
+    }
+
+    const { userCode, intro } = req.body;
+    const image = req.file === undefined ? null : '/image/' + req.file.filename;
+    console.log(image);
+
+    const userInfo = Users.findOne({ where: { userCode } });
+    if(!userInfo) return res.status(400).json({ result: 'FAIL', code: -2, message: '존재하지 않는 userCode입니다.'});
+
+    const doneSqlUpdate = await Users.update(
+        {
+            intro: intro,
+            img: image
+        },
+        {
+            where: {
+                userCode: userCode
+            }
+        });
+
+    if(doneSqlUpdate) return res.status(200).json({ result:'SUCCESS', code:0, message:'정상' });
+    else return res.status(400).json({ result:'FAIL', code:-3, message:'사용자 정보가 변경되지 않았습니다.', response: {accessToken, refreshToken} });
+
 }
