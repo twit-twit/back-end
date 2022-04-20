@@ -46,7 +46,7 @@ router.post('/', upload.single('image'), userController.postSignUp);
 router.put('/', upload.single('image'), userController.postUserUpdate)
 router.post('/login', userController.postLogin);
 router.get('/dup', userController.getDuplicateUserId);
-router.get('/auth', userController.getValidAuthCheck);
+router.get('/auth', authMiddleware, userController.getValidAuthCheck);
 router.get('/refresh', refresh);
 
 module.exports = router;
