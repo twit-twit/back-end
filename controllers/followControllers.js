@@ -7,8 +7,16 @@ exports.getMyFollows = async (req, res) => {
     #swagger.summary = '팔로우 조회 API'
     #swagger.description = '내가 팔로우한 모든 유저 목록을 조회하는 API'
     ========================================================================================================*/
+    if (!req.query.userCode) {
+        /*=====================================================================================
+        #swagger.responses[400] = {
+            description: 'userCode 입력되지 않았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+            schema: { "result": "FAIL", 'code': -10, 'message': "필수 입력값 조회 실패", }
+        }
+        =====================================================================================*/
+        return res.status(400).json({ result: "Fail", code: -10, message: "필수 입력값 조회 실패" }) }
     const { userCode } = req.query;
-    const isUser = await Users.findOne({ where: {userCode} })
+    const isUser = await Users.findOne({ where: { userCode } })
     if (!isUser) {
         /*=====================================================================================
         #swagger.responses[400] = {
@@ -62,14 +70,24 @@ exports.postMyFollows = async (req, res) => {
     #swagger.summary = '팔로우 API'
     #swagger.description = '팔로우 API'
     ========================================================================================================*/
+    if ( !req.body.userCode || !req.body.followUserCode ) {
+        /*=====================================================================================
+        #swagger.responses[400] = {
+            description: 'userCode, followUserCode가 입력되지 않았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+            schema: { "result": "FAIL", 'code': -10, 'message': "필수 입력값 조회 실패", }
+        }
+        =====================================================================================*/
+        return res.status(400).json({ result: "Fail", code: -10, message: "필수 입력값 조회 실패" }) 
+    }
+    const isUser = await Users.findOne({ where: { userCode } })
+    const existUser = await Users.findOne({ where : { userCode: followUserCode } });
     const { userCode, followUserCode } = req.body;
-    console.log(req.body)
     const findFollow = await Follows.findOne({ where: { userCode, followUserCode } })
-    if (userCode==followUserCode) {
+    if (!isUser || !existUser || Number(userCode) === Number(followUserCode) || findFollow ) {
         /*=====================================================================================
         #swagger.responses[400] = {
             description: '비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
-            schema: { "result": "FAIL", 'code': -5, 'message': "팔로우 실패", }
+            schema: { "result": "FAIL", 'code': -5, 'message': "팔로우 실패1", }
         }
         =====================================================================================*/
         return res.status(400).json({
@@ -78,49 +96,7 @@ exports.postMyFollows = async (req, res) => {
             message: "팔로우 실패1"
         })
     }
-    if (findFollow) {
-        /*=====================================================================================
-        #swagger.responses[400] = {
-            description: '비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
-            schema: { "result": "FAIL", 'code': -5, 'message': "팔로우 실패", }
-        }
-        =====================================================================================*/
-        return res.status(400).json({
-            result: "FAIL", 
-            code: -5, 
-            message: "팔로우 실패2"
-        })
-    }
-    const isUser = await Users.findOne({ where: { userCode } })
-    if (!isUser) {
-        /*=====================================================================================
-        #swagger.responses[400] = {
-            description: '비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
-            schema: { "result": "FAIL", 'code': -5, 'message': "팔로우 조회 실패", }
-        }
-        =====================================================================================*/
-        return res.status(400).json({
-            result: 'FAIL',
-            code: -5,
-            message: "팔로우 실패3"
-        })
-    }
     try {
-        const existUser = await Users.findOne({ where : { userCode: followUserCode } });
-        console.log("existUser", existUser)
-        if (existUser === null) {
-            /*=====================================================================================
-            #swagger.responses[400] = {
-                description: '비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
-                schema: { "result": "FAIL", 'code': -5, 'message': "팔로우 실패", }
-            }
-            =====================================================================================*/
-            return res.status(400).json({
-                result: 'FAIL',
-                code: -5,
-                message: "팔로우 실패4"
-            })
-        }
         await Follows.create({
             userCode,
             followUserCode
@@ -158,39 +134,78 @@ exports.deleteMyFollows = async (req, res) => {
     #swagger.summary = '팔로우 취소 API'
     #swagger.description = '이미 팔로우했던 유저를 내가 팔로우한 유저 목록에서 삭제하는 API'
     ========================================================================================================*/
-    const { userCode, followUserCode } = req.query;
-    try {
-        await Follows.destroy({
-            where: {
-                userCode,
-                followUserCode
-            }
-        })
+    if ( !req.query.userCode || !req.query.followUserCode ) {
         /*=====================================================================================
-        #swagger.responses[201] = {
-            description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
-            schema: { "result": "SUCCESS", 'code': 0, 'message': '팔로우 취소 성공', }
+        #swagger.responses[400] = {
+            description: 'userCode, followUserCode가 입력되지 않았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+            schema: { "result": "FAIL", 'code': -10, 'message': "필수 입력값 조회 실패", }
         }
         =====================================================================================*/
-        return res.status(201).json({
-            result: 'SUCCESS',
-            code: 0,
-            message:'팔로우 취소 성공'
-        })
-    } catch (err) {
-        console.log(err)
+        return res.status(400).json({ result: "Fail", code: -10, message: "필수 입력값 조회 실패" }) }
+    const { userCode, followUserCode } = req.query;
+    const isUser = await Users.findOne({ where: { userCode } })
+    const existUser = await Users.findOne({ where : { userCode: followUserCode } });
+    if (!isUser || !existUser ) {
         /*=====================================================================================
         #swagger.responses[400] = {
             description: '비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
-            schema: { "result": "FAIL", 'code': -5, 'message': "팔로우 취소 실패", }
+            schema: { "result": "FAIL", 'code': -5, 'message': "팔로우 실패1", }
         }
         =====================================================================================*/
         return res.status(400).json({
-            result: 'FAIL',
+            result: "FAIL",
+            code: -5,
+            message: "팔로우 실패1"
+        })
+    }
+    const findFollow = await Follows.findOne({ where: { userCode, followUserCode } })
+    if ( findFollow ) {
+        try {
+            await Follows.destroy({
+                where: {
+                    userCode,
+                    followUserCode
+                }
+            })
+            /*=====================================================================================
+            #swagger.responses[201] = {
+                description: '정상적인 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+                schema: { "result": "SUCCESS", 'code': 0, 'message': '팔로우 취소 성공', }
+            }
+            =====================================================================================*/
+            return res.status(201).json({
+                result: 'SUCCESS',
+                code: 0,
+                message:'팔로우 취소 성공'
+            })
+        } catch (err) {
+            console.log(err)
+            /*=====================================================================================
+            #swagger.responses[400] = {
+                description: '비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+                schema: { "result": "FAIL", 'code': -5, 'message': "팔로우 취소 실패", }
+            }
+            =====================================================================================*/
+            return res.status(400).json({
+                result: 'FAIL',
+                code: -5,
+                message: "팔로우 취소 실패"
+            })
+        }
+    } else {
+        return res.status(400).json({
+            /*=====================================================================================
+            #swagger.responses[400] = {
+                description: '비정상 값을 응답받았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+                schema: { "result": "FAIL", 'code': -5, 'message': "팔로우 취소 실패", }
+            }
+            =====================================================================================*/
+            result: "FAIL",
             code: -5,
             message: "팔로우 취소 실패"
         })
     }
+    
 }
 
 exports.getMyFollowers = async (req, res) => {
@@ -199,6 +214,14 @@ exports.getMyFollowers = async (req, res) => {
     #swagger.summary = '팔로워 조회 API'
     #swagger.description = '나를 팔로우한 모든 유저 목록을 조회하는 API'
     ========================================================================================================*/
+    if (!req.query.userCode) {
+        /*=====================================================================================
+        #swagger.responses[400] = {
+            description: 'userCode가 입력되지 않았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+            schema: { "result": "FAIL", 'code': -10, 'message': "필수 입력값 조회 실패", }
+        }
+        =====================================================================================*/
+        return res.status(400).json({ result: "Fail", code: -10, message: "필수 입력값 조회 실패" }) }
     const { userCode } = req.query;
     const isUser = await Users.findOne({ where: {userCode} })
     if (!isUser) {
@@ -255,8 +278,16 @@ exports.getRecommendFriends = async (req, res) => {
     #swagger.summary = '팔로우 추천 API'
     #swagger.description = '내가 팔로우하지 않은 유저 목록을 조회하는 API'
     ========================================================================================================*/
+    if (!req.query.userCode) {
+        /*=====================================================================================
+        #swagger.responses[400] = {
+            description: 'userCode가 입력되지 않았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+            schema: { "result": "FAIL", 'code': -10, 'message': "필수 입력값 조회 실패", }
+        }
+        =====================================================================================*/
+        return res.status(400).json({ result: "Fail", code: -10, message: "필수 입력값 조회 실패" }) }
     const { userCode } = req.query;
-    const isUser = await Users.findOne({ where: {userCode} })
+    const isUser = await Users.findOne({ where: { userCode } })
     if (!isUser) {
         /*=====================================================================================
         #swagger.responses[400] = {

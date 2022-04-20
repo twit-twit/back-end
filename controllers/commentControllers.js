@@ -1,5 +1,4 @@
 const { Feeds, Users, Comment } = require("../models")
-const { Op } = require("sequelize")
 
 exports.getComments = async (req, res) => {
     /*========================================================================================================
@@ -7,19 +6,27 @@ exports.getComments = async (req, res) => {
     #swagger.summary = '코멘트 조회 API'
     #swagger.description = '특정 피드의 코멘트 목록을 모두 조회하는 API'
     ========================================================================================================*/
+    if (!req.query.feedCode) {
+        /*=====================================================================================
+        #swagger.responses[400] = {
+            description: 'feedCode가 입력되지 않았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+            schema: { "result": "FAIL", 'code': -10, 'message': "필수 입력값 조회 실패", }
+        }
+        =====================================================================================*/
+        return res.status(400).json({ result: "Fail", code: -10, message: "필수 입력값 조회 실패" }) }
     const { feedCode } = req.query;
-    const isExist = await Users.findOne({ where: { feedCode } })
+    const isExist = await Feeds.findOne({ where: { feedCode } })
     if (!isExist) {
         /*=====================================================================================
         #swagger.responses[400] = {
             description: '입력 받은 feedCode가 존재하지 않을 때, 아래 예제와 같은 형태로 응답받습니다.',
-            schema: { "result": "FAIL", 'code': -6, 'message': "코멘트 조회 실패", }
+            schema: { "result": "FAIL", 'code': -6, 'message': "코멘트 조회 실패1", }
         }
         =====================================================================================*/
         return res.status(400).json({
             result: 'FAIL',
             code: -6,
-            message: "코멘트 조회 실패"
+            message: "코멘트 조회 실패1"
         })
     }
     try {
@@ -62,9 +69,18 @@ exports.postComments = async (req, res) => {
     #swagger.summary = '코멘트 작성 API'
     #swagger.description = '특정 피드에 나의 코멘트를 작성하는 API'
     ========================================================================================================*/
+    if ( !req.body.feedCode || !req.body.userCode || !req.body.content ) {
+        /*=====================================================================================
+        #swagger.responses[400] = {
+            description: 'feedCode, userCode, content가 입력되지 않았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+            schema: { "result": "FAIL", 'code': -10, 'message': "필수 입력값 조회 실패", }
+        }
+        =====================================================================================*/
+        return res.status(400).json({ result: "Fail", code: -10, message: "필수 입력값 조회 실패" }) }
     const { feedCode, userCode, content } = req.body;
     const isExistFeed = await Feeds.findOne({ where: { feedCode } })
-    if (!isExistFeed) {
+    const isExistUser = await Users.findOne({ where: { userCode } })
+    if (!isExistFeed || !isExistUser) {
         /*=====================================================================================
         #swagger.responses[400] = {
             description: '입력 받은 feedCode가 존재하지 않을 때, 아래 예제와 같은 형태로 응답받습니다.',
@@ -75,33 +91,6 @@ exports.postComments = async (req, res) => {
             result: 'FAIL',
             code: -6,
             message: "코멘트 작성 실패1"
-        })
-    }
-    const isExistUser = await Users.findOne({ where: { userCode } })
-    if (!isExistUser) {
-        /*=====================================================================================
-        #swagger.responses[400] = {
-            description: '입력 받은 userCode가 존재하지 않을 때, 아래 예제와 같은 형태로 응답받습니다.',
-            schema: { "result": "FAIL", 'code': -6, 'message': "코멘트 작성 실패2", }
-        }
-        =====================================================================================*/
-        return res.status(400).json({
-            result: 'FAIL',
-            code: -6,
-            message: "코멘트 작성 실패2"
-        })
-    }
-    if (content === "" || content === null) {
-        /*=====================================================================================
-        #swagger.responses[400] = {
-            description: 'content가 입력되지 않을 때, 아래 예제와 같은 형태로 응답받습니다.',
-            schema: { "result": "FAIL", 'code': -6, 'message': "코멘트 작성 실패3", }
-        }
-        =====================================================================================*/
-        return res.status(400).json({
-            result: "FAIL",
-            code: -6,
-            message: "코멘트 작성 실패3"
         })
     }
     try {
@@ -143,9 +132,20 @@ exports.putComments = async (req, res) => {
     #swagger.summary = '코멘트 수정 API'
     #swagger.description = '특정 피드에 작성된 나의 코멘트를 수정하는 API'
     ========================================================================================================*/
+    if ( !req.body.commentId || !req.body.feedCode || !req.body.userCode || !req.body.content ) {
+        /*=====================================================================================
+        #swagger.responses[400] = {
+            description: 'commentId, feedCode, userCode, content가 입력되지 않았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+            schema: { "result": "FAIL", 'code': -10, 'message': "필수 입력값 조회 실패", }
+        }
+        =====================================================================================*/
+        return res.status(400).json({ result: "Fail", code: -10, message: "필수 입력값 조회 실패" }) }
     const { commentId, feedCode, userCode, content } = req.body;
     const isExistComment = await Comment.findOne({ where: { commentId } })
-    if (!isExistComment) {
+    const isExistFeed = await Feeds.findOne({ where: { feedCode } })
+    const isExistUser = await Users.findOne({ where: { userCode } })
+
+    if (!isExistComment || !isExistFeed || !isExistUser) {
         /*=====================================================================================
         #swagger.responses[400] = {
             description: '입력 받은 commentId가 존재하지 않을 때, 아래 예제와 같은 형태로 응답받습니다.',
@@ -158,54 +158,12 @@ exports.putComments = async (req, res) => {
             message: "코멘트 수정 실패1"
         })
     }
-    const isExistFeed = await Feeds.findOne({ where: { feedCode } })
-    if (!isExistFeed) {
-        /*=====================================================================================
-        #swagger.responses[400] = {
-            description: '입력 받은 feedCode가 존재하지 않을 때, 아래 예제와 같은 형태로 응답받습니다.',
-            schema: { "result": "FAIL", 'code': -6, 'message': "코멘트 수정 실패1", }
-        }
-        =====================================================================================*/
-        return res.status(400).json({
-            result: 'FAIL',
-            code: -6,
-            message: "코멘트 수정 실패2"
-        })
-    }
-    const isExistUser = await Users.findOne({ where: { userCode } })
-    if (!isExistUser) {
-        /*=====================================================================================
-        #swagger.responses[400] = {
-            description: '입력 받은 userCode가 존재하지 않을 때, 아래 예제와 같은 형태로 응답받습니다.',
-            schema: { "result": "FAIL", 'code': -6, 'message': "코멘트 수정 실패3", }
-        }
-        =====================================================================================*/
-        return res.status(400).json({
-            result: 'FAIL',
-            code: -6,
-            message: "코멘트 수정 실패3"
-        })
-    }
-    if (content === "" || content === null) {
-        /*=====================================================================================
-        #swagger.responses[400] = {
-            description: 'content가 입력되지 않을 때, 아래 예제와 같은 형태로 응답받습니다.',
-            schema: { "result": "FAIL", 'code': -6, 'message': "코멘트 수정 실패4", }
-        }
-        =====================================================================================*/
-        return res.status(400).json({
-            result: "FAIL",
-            code: -6,
-            message: "코멘트 수정 실패4"
-        })
-    }
 
     //comment 작성자 찾기
-    let commentUser = await Comment.findAll({ where: { commentId } }).then((user) => {
-        return user[0].userCode
+    let [commentUser] = await Comment.findAll({ where: { commentId }, raw: true }).then((comment) => {
+        return comment.map((x)=>{return x.userCode})
     })
-    console.log("commentUser", typeof(commentUser), commentUser)
-    
+
     if(Number(userCode) === commentUser) {
         try {
             await Comment.update({
@@ -263,9 +221,19 @@ exports.deleteComments = async (req, res) => {
     #swagger.summary = '코멘트 삭제 API'
     #swagger.description = '특정 피드에 작성된 나의 코멘트를 삭제하는 API'
     ========================================================================================================*/
+    if (!req.query.commentId || !req.query.feedCode || !req.query.userCode) {
+        /*=====================================================================================
+        #swagger.responses[400] = {
+            description: 'commentId, feedCode, userCode가 입력되지 않았을 때, 아래 예제와 같은 형태로 응답받습니다.',
+            schema: { "result": "FAIL", 'code': -10, 'message': "필수 입력값 조회 실패", }
+        }
+        =====================================================================================*/
+        return res.status(400).json({ result: "Fail", code: -10, message: "필수 입력값 조회 실패" }) }
     const { commentId, feedCode, userCode } = req.query;
     const isExistComment = await Comment.findOne({ where: { commentId } })
-    if (!isExistComment) {
+    const isExistFeed = await Feeds.findOne({ where: { feedCode } })
+    const isExistUser = await Users.findOne({ where: { userCode } })
+    if (!isExistComment || !isExistFeed || !isExistUser) {
         /*=====================================================================================
         #swagger.responses[400] = {
             description: '입력 받은 commentId가 존재하지 않을 때, 아래 예제와 같은 형태로 응답받습니다.',
@@ -278,39 +246,11 @@ exports.deleteComments = async (req, res) => {
             message: "코멘트 삭제 실패1"
         })
     }
-    const isExistFeed = await Feeds.findOne({ where: { feedCode } })
-    if (!isExistFeed) {
-        /*=====================================================================================
-        #swagger.responses[400] = {
-            description: '입력 받은 feedCode가 존재하지 않을 때, 아래 예제와 같은 형태로 응답받습니다.',
-            schema: { "result": "FAIL", 'code': -6, 'message': "코멘트 삭제 실패1", }
-        }
-        =====================================================================================*/
-        return res.status(400).json({
-            result: 'FAIL',
-            code: -6,
-            message: "코멘트 삭제 실패2"
-        })
-    }
-    const isExistUser = await Users.findOne({ where: { userCode } })
-    if (!isExistUser) {
-        /*=====================================================================================
-        #swagger.responses[400] = {
-            description: '입력 받은 userCode가 존재하지 않을 때, 아래 예제와 같은 형태로 응답받습니다.',
-            schema: { "result": "FAIL", 'code': -6, 'message': "코멘트 삭제 실패3", }
-        }
-        =====================================================================================*/
-        return res.status(400).json({
-            result: 'FAIL',
-            code: -6,
-            message: "코멘트 삭제 실패3"
-        })
-    }
+
     //comment 작성자 찾기
-    let commentUser = await Comment.findAll({ where: { commentId } }).then((user) => {
-        return user[0].userCode
+    let [commentUser] = await Comment.findAll({ where: { commentId }, raw: true }).then((comment) => {
+        return comment.map((x)=>{return x.userCode})
     })
-    console.log("commentUser", typeof(commentUser), commentUser)
     
     if(Number(userCode) === commentUser) {
         try {
