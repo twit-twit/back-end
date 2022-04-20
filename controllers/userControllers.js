@@ -21,7 +21,7 @@ exports.postLogin = async (req, res) => {
     const {userId, password} = req.body;
 
     // 사용자 ID 존재여부 확인
-    const findUserId = await Users.findOne({ where: {userId}});
+    const findUserId = await Users.findOne({ where: {userId} });
     if(!findUserId)
         return res.status(401).json({ result:'FAIL', code:-1, message:'ID 또는 PW가 일치하지 않음' });
 
@@ -36,7 +36,7 @@ exports.postLogin = async (req, res) => {
 
     // Refresh 토큰 DB 내 저장
     const doneSqlUpdate = await Users.update({ refreshToken: refreshToken }, { where: { userCode: findUserId.userCode } });
-    if(doneSqlUpdate) return res.status(200).json({ result:'SUCCESS', code:0, message:'정상', response: {accessToken, refreshToken} });
+    if(doneSqlUpdate) return res.status(200).json({ result:'SUCCESS', code:0, message:'정상', response: {UserInfo: { userId: findUserId.userId, userCode: findUserId.userCode}, accessToken, refreshToken} });
     else return res.status(400).json({ result:'FAIL', code:-2, message:'Refresh Token이 저장되지 않았습니다.', response: {accessToken, refreshToken} });
 }
 
@@ -188,11 +188,18 @@ exports.getDuplicateUserId = async (req, res) => {
 exports.getValidAuthCheck = (req, res) => {
     try {
         const { user } = res.locals;
-        res.status(200).json({
-            userId: user.userId,
+        console.log(res.locals);
+        return res.status(200).json({
+            result: 'SUCCESS',
+            code: 0,
+            message: '정상',
+            userInfo: {
+                userId: user.userId,
+                usercode: user.userCode
+            }
         });
     } catch (err) {
-        res.status(400).json({ result: "FAIL", message: "유저를 확인할 수 없습니다." });
+        return res.status(401).json({ result: "FAIL", code: -1, message: "만료되었거나, 유효하지 않은 토큰입니다." });
     }
 }
 
