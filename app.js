@@ -23,13 +23,29 @@ const removeHeader = (req, res, next) => {
     res.removeHeader("X-Powered-By");
     next();
 };
+const whitelist = ['http://localhost:3000', 'http://twitter-clone-coding.s3-website.ap-northeast-2.amazonaws.com'];
+const corsOptions = {
+	origin: function (origin, callback) {
+		if(whitelist.indexOf(origin) !== -1){
+			callback(null, true);
+		}else{
+			callback(new Error('Not Allowed Origin!'));
+		}
+	},
+	methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+	preflightContinue: false,
+	optionsSuccessStatus: 204,
+	credentials: true,
+};
+//app.use(
+//    cors({
+//        origin: ['http://localhost:3000', 'http://twitter-clone-coding.s3-website.ap-northeast-2.amazonaws.com/'],
+//        //credentials: true,
+//    })
+//)
 
-app.use(
-    cors({
-        origin: ['http://localhost:3000', 'http://13.125.34.252'],
-        credentials: true,
-    })
-)
+app.use(cors(corsOptions));
+
 app.use(morgan("combined"));
 app.use(express.json());
 app.use(express.static("public"));
